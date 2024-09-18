@@ -4,6 +4,7 @@ import { CreateUserPayload } from 'src/types/user.type';
 
 @Controller('user')
 export class UserController {
+  // Dependency injection
   constructor(private readonly userService: UserService) {}
 
   @Get()
@@ -14,11 +15,6 @@ export class UserController {
   @Get('/:id') // Path params
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
-  }
-
-  @Post()
-  create(@Body() payload: CreateUserPayload) {
-    return this.userService.create(payload);
   }
 
 }
