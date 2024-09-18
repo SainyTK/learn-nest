@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserPayload, User } from 'src/types/user.type';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -26,12 +27,13 @@ export class UserService {
     }
 
     create(payload: CreateUserPayload) {
+        const saltRounds = 10;
         const newUser: User = {
             id: (this.users.length + 1).toString(),
             firstName: payload.firstName,
             lastName: payload.lastName,
             email: payload.email,
-            hashedPassword: payload.password // TODO: Danger! Must hash before storing DB
+            hashedPassword: bcrypt.hashSync(payload.password, saltRounds) // TODO: Danger! Must hash before storing DB
         };
         this.users.push(newUser);
         return newUser;
