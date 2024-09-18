@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterPayload } from 'src/types/auth.type';
+import { LoginPayload, RegisterPayload } from 'src/types/auth.type';
 
 @Controller('auth')
 export class AuthController {
@@ -10,4 +10,10 @@ export class AuthController {
   create(@Body() payload: RegisterPayload) {
     return this.authService.register(payload);
   }
+
+  @Post('/login')
+  login(@Body() payload: LoginPayload) {
+    return this.authService.login(payload.email, payload.password);
+  }
+  
 }

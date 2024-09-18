@@ -25,6 +25,10 @@ export class UserService {
         return this.users.find(user => user.id === id)
     }
 
+    findByEmail(email: string) {
+        return this.users.find(user => user.email === email);
+    }
+
     create(payload: CreateUserPayload) {
         const newUser: User = {
             id: (this.users.length + 1).toString(),

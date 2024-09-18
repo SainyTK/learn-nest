@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { RegisterPayload } from 'src/types/auth.type';
 import { CreateUserPayload } from 'src/types/user.type';
 import { UserService } from 'src/user/user.service';
@@ -20,8 +20,18 @@ export class AuthService {
         return this.userSerivce.create(newUser);
     }
 
-    login() {
-
+    login(email: string, password: string) {
+        const user = this.userSerivce.findByEmail(email);
+        if (!user) {
+            throw new UnauthorizedException();
+        } else {
+            const isValidPassword = bcrypt.compareSync(password, user.hashedPassword);
+            if (!isValidPassword) {
+                throw new UnauthorizedException();
+            } else {
+                return user; // JWT (JSON Web Token)
+            }
+        }
     }
 
 }
