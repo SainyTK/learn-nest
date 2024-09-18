@@ -3,11 +3,12 @@ import { RegisterPayload } from 'src/types/auth.type';
 import { CreateUserPayload } from 'src/types/user.type';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from "bcrypt";
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
-    constructor(private readonly userSerivce: UserService) {}
+    constructor(private readonly userSerivce: UserService, private jwtService: JwtService) {}
 
     register(payload: RegisterPayload) {
         const saltRounds = 10;
@@ -20,7 +21,7 @@ export class AuthService {
         return this.userSerivce.create(newUser);
     }
 
-    login(email: string, password: string) {
+    async login(email: string, password: string) {
         const user = this.userSerivce.findByEmail(email);
         if (!user) {
             throw new UnauthorizedException();
@@ -29,7 +30,9 @@ export class AuthService {
             if (!isValidPassword) {
                 throw new UnauthorizedException();
             } else {
-                return user; // JWT (JSON Web Token)
+                return {
+                    accessToken: await this.jwtService.signAsync(user),
+                }
             }
         }
     }
