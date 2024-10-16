@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserPayload, User } from 'src/types/user.type';
 
@@ -6,42 +6,33 @@ import { CreateUserPayload, User } from 'src/types/user.type';
 export class UserService {
 
     constructor(private readonly prismaService: PrismaService) {}
- 
-    // Database
-    private users: User[] = [
-        {
-            id: "1",
-            firstName: "Tanakorn",
-            lastName: "Karode",
-            // Basic authen (username, password)
-            email: "tanakorn.karode@gmail.com",
-            // password: "123456789",
-            hashedPassword: "asdlkj;aldfjoiaeorje;w"
-        }
-    ]
 
     findAll() {
-        return this.users;
+        return this.prismaService.user.findMany();
     }
 
     findOne(id: string) {
-        return this.users.find(user => user.id === id)
+        return this.prismaService.user.findUnique({ where: { id }})
     }
 
     findByEmail(email: string) {
-        return this.users.find(user => user.email === email);
+        return this.prismaService.user.findUnique({ where: { email }})
     }
 
-    create(payload: CreateUserPayload) {
-        const newUser: User = {
-            id: (this.users.length + 1).toString(),
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            email: payload.email,
-            hashedPassword: payload.hashedPassword
-        };
-        this.users.push(newUser);
-        return newUser;
+    async create(payload: CreateUserPayload) {
+        const user = await this.findByEmail(payload.email);
+        if (user) {
+            throw new BadRequestException('User already exists')
+        }
+        
+        return this.prismaService.user.create({
+            data: {
+                firstName: payload.firstName,
+                lastName: payload.lastName,
+                email: payload.email,
+                hashedPassword: payload.hashedPassword
+            }
+        })
     }
 
 }

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ProductService } from './product.service';
 import { Product } from 'src/types/product.type';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CreateProductDTO } from './dto/create-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -9,27 +10,31 @@ export class ProductController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(): Product[] {
+  findAll() {
     return this.productService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
-  findOne(@Param('id') id: string): Product {
+  findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() product: Product): Product {
-    return this.productService.create(product);
+  create(@Body() dto: CreateProductDTO) {
+    return this.productService.create(dto);
   }
 
+  @UseGuards(AuthGuard)
   @Patch('/:id')
-  update(@Param('id') id: string, @Body() product: Product): Product {
+  update(@Param('id') id: string, @Body() product: Product) {
     return this.productService.update(+id, product);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('/:id')
-  deleteProduct(@Param('id') id: string): void {
+  deleteProduct(@Param('id') id: string) {
     return this.productService.delete(+id);
   }
 
