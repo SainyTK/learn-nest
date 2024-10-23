@@ -18,13 +18,18 @@ export class ProductService {
         return this.prismaService.product.findUnique({ where: { id }})
     }
 
-    create(dto: CreateProductDTO) {
+    findByUserId(userId: string) {
+        return this.prismaService.product.findMany({ where: { userId }})
+    }
+
+    create(userId: string,dto: CreateProductDTO) {
         return this.prismaService.product.create({data: {
             title: dto.title,
             description: dto.description,
             price: dto.price,
             stock: dto.stock,
-            image: dto.image
+            image: dto.image,
+            userId
         }})
     }
 
